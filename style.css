@@ -1,0 +1,449 @@
+/* --- 變數定義 (相同) --- */
+:root {
+    --font-main: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --color-bg: #fdfaf6;
+    --color-text: #34495e;
+    --color-border: #e0e0e0;
+    --color-white: #ffffff;
+    --p1-color: #3498db;
+    --p1-bg: #ecf5fb;
+    --p2-color: #e74c3c;
+    --p2-bg: #fdf5f4;
+    --btn-primary: #3498db;
+    --btn-success: #2ecc71;
+    --btn-danger: #e74c3c;
+    /* 【新】 AI 按鈕顏色 */
+    --btn-ai-on: #f39c12; /* 橘色 */
+    
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* --- 動畫定義 (相同) --- */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes scorePulse {
+    0% { transform: scale(1.05); } 
+    50% { transform: scale(1.2); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+    100% { transform: scale(1.05); }
+}
+
+@keyframes animatedGradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+
+/* --- 基礎樣式 (相同) --- */
+* {
+    box-sizing: border-box;
+}
+
+/* 【美觀更新】 手機版 body 邊距縮小 + 動畫背景 */
+body {
+    font-family: var(--font-main);
+    /* 【美觀更新】 使用更豐富的動畫漸層背景 (加入 P2 顏色) */
+    background: linear-gradient(135deg, var(--p1-bg) 0%, var(--p2-bg) 50%, var(--color-bg) 100%);
+    background-size: 400% 400%; /* 讓漸層更寬廣, 移動更慢 */
+    animation: animatedGradient 20s ease infinite; /* 複用 keyframe，但速度放慢 */
+    
+    color: var(--color-text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px 5px; /* 左右邊距 5px */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* 【美觀更新】 手機版 h1 字體縮小 + 柔和陰影 */
+h1 {
+    font-size: 2.5rem; /* 縮小字體 */
+    font-weight: 700;
+    background: linear-gradient(45deg, var(--p1-color), #2c3e50);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    
+    /* 【美觀更新】 增加柔和的陰影使其更突出 */
+    text-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+    
+    text-align: center;
+    margin-bottom: 20px;
+    background-size: 200% 200%;
+    animation: animatedGradient 6s ease infinite;
+}
+
+/* 【美觀更新】 遊戲容器 "磨砂玻璃" 效果 */
+#game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 750px; 
+    
+    /* 【美觀更新】 "磨砂玻璃" 效果 */
+    /* 1. 半透明背景 (Fallback) */
+    background-color: rgba(255, 255, 255, 0.75); 
+    
+    /* 2. 模糊背景 (如果瀏覽器支援) */
+    @supports (backdrop-filter: blur(10px)) or (-webkit-backdrop-filter: blur(10px)) {
+        background-color: rgba(255, 255, 255, 0.6); /* 支援時可以更透明 */
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+    }
+    
+    padding: 15px; /* 邊距縮小 */
+    border-radius: 20px;
+    
+    /* 【美觀更新】 陰影加深一點, 邊框更細 */
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    
+    animation: fadeIn 0.6s ease-out;
+}
+
+/* --- 計分板 (相同) --- */
+#status-bar {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 20px; 
+}
+
+/* 【美觀更新】 強化焦點 */
+.score-box {
+    flex: 1;
+    font-size: 1.15em;
+    font-weight: 600;
+    padding: 12px 15px; 
+    border-radius: 10px;
+    background-color: var(--color-white);
+    color: #95a5a6;
+    border: 2px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+    
+    /* 【美觀更新】 讓非作用中的計分板更柔和 */
+    opacity: 0.7;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.score-box.active {
+    border-color: var(--p1-color);
+    color: var(--p1-color);
+    background-color: var(--p1-bg);
+    
+    /* 【美觀更新】 作用中時完全不透明, 並放大 */
+    opacity: 1;
+    transform: scale(1.08); /* 稍微放大一點 */
+    
+    box-shadow: 0 3px 8px rgba(52, 152, 219, 0.3);
+}
+
+.score-box.player2.active {
+    border-color: var(--p2-color);
+    color: var(--p2-color);
+    background-color: var(--p2-bg);
+    box-shadow: 0 3px 8px rgba(231, 76, 60, 0.3);
+    
+    /* 【美觀更新】 確保 P2 也會完全不透明 */
+    opacity: 1;
+}
+
+.score-box.score-pulse {
+    animation: scorePulse 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* 【美觀更新】 畫布背景色 */
+canvas {
+    /* 【美觀更新】 背景改為更柔和的顏色, 而非純白 */
+    background-color: var(--color-bg);
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--color-border);
+    cursor: pointer;
+    width: 100%;
+    height: auto;
+    transition: box-shadow 0.3s ease;
+    /* 【新】 防止手機雙擊縮放 */
+    touch-action: manipulation;
+}
+
+canvas:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+
+/* 【美觀更新】 按鈕陰影 */
+.btn {
+    font-family: var(--font-main);
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 15px 20px; /* 增加垂直 padding */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    /* 【美觀更新】 陰影更柔和 */
+    box-shadow: var(--shadow-sm);
+    /* box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08); */
+    transition: all 0.2s ease-in-out;
+    color: white;
+    width: 100%;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    /* 【美觀更新】 陰影更柔和 */
+    box-shadow: var(--shadow-md);
+    /* box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08); */
+}
+.btn:active {
+    transform: translateY(1px);
+    box-shadow: var(--shadow-sm);
+    /* box-shadow: 0 2px 4px rgba(50, 50, 93, 0.1), 0 1px 2px rgba(0, 0, 0, 0.08); */
+}
+.btn.primary { background-color: var(--btn-primary); }
+.btn.success { background-color: var(--btn-success); }
+.btn.danger  { background-color: var(--btn-danger); }
+
+/* 【新】 AI 按鈕樣式 */
+.btn.ai-off { background-color: var(--btn-primary); }
+.btn.ai-on  { background-color: var(--btn-ai-on); }
+
+
+/* --- 按鈕控制區 (相同) --- */
+#action-bar {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    flex-direction: column;
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+    opacity: 0;
+    transform: translateY(10px);
+    visibility: hidden;
+    pointer-events: none;
+}
+
+#action-bar.visible {
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
+    pointer-events: auto;
+}
+
+/* 【修改】 遊戲控制區 (改為 flex) */
+#game-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+/* 【新】 設定群組的樣式 (手機版) */
+.control-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    /* 【美觀更新】 使用透明背景融入玻璃效果 */
+    background-color: rgba(255, 255, 255, 0.3);
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.control-group label {
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+/* 【新】 數字輸入框的樣式 */
+#draw-length-input {
+    font-family: var(--font-main);
+    font-size: 1rem;
+    font-weight: 700;
+    width: 60px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 2px solid var(--color-border);
+    text-align: center;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+    transition: border-color 0.2s ease;
+}
+
+#draw-length-input:focus {
+    outline: none;
+    border-color: var(--btn-primary);
+}
+
+#draw-length-input:disabled {
+    background-color: #f4f4f4;
+    cursor: not-allowed;
+    color: #aaa;
+}
+
+
+/* --- 遊戲結束 Modal (相同) --- */
+#modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* 【美觀更新】 增加模糊背景 */
+    background: rgba(0, 0, 0, 0.5);
+    @supports (backdrop-filter: blur(5px)) or (-webkit-backdrop-filter: blur(5px)) {
+        background: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+    }
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    animation: modalFadeIn 0.3s ease;
+}
+
+/* 【新】 五彩紙屑動畫容器 */
+#confetti-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none; /* 讓滑鼠可以點擊底下的按鈕 */
+    z-index: 101; /* 在彈窗(100)之上, 訊息(102)之下 */
+}
+
+/* 【新】 單個五彩紙屑 */
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 20px;
+    background-color: #f39c12; /* 預設顏色, 會被 JS 覆蓋 */
+    top: -50px; /* 從畫面頂部外開始 */
+    opacity: 0.9;
+    
+    /* 綁定動畫: fall 負責掉落, rotate 負責旋轉/飄動 */
+    animation: fall 5s linear forwards, 
+                 rotate 3s infinite ease-in-out;
+}
+
+/* 【新】 掉落動畫 */
+@keyframes fall {
+    from {
+        transform: translateY(0) rotate(0);
+    }
+    to {
+        transform: translateY(110vh) rotate(720deg); /* 掉落到畫面底部外 */
+        opacity: 0;
+    }
+}
+
+/* 【新】 旋轉/飄動動畫 */
+@keyframes rotate {
+    0%, 100% {
+        transform: translateX(0) rotateZ(0);
+    }
+    50% {
+        /* 左右飄動 */
+        transform: translateX(20px) rotateZ(180deg);
+    }
+}
+
+
+#game-over-message {
+    background: var(--color-white);
+    padding: 40px 50px;
+    border-radius: 20px;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+    animation: fadeIn 0.3s ease-out; 
+    
+    /* 【修改】 確保訊息在紙屑之上 */
+    position: relative; 
+    z-index: 102;
+}
+
+#winner-text {
+    display: block;
+    font-size: 1.8em;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 25px; 
+}
+
+#reset-button-modal {
+    width: 100%; 
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* --- 【修改】 媒體查詢 (補回桌機版樣式) --- */
+@media (min-width: 768px) {
+    /* 恢復桌機版 body 邊距 */
+    body {
+        padding: 40px 20px;
+    }
+
+    /* 恢復桌機版 h1 字體 */
+    h1 {
+        font-size: 2.8rem;
+    }
+    
+    /* 恢復桌機版 game-container 邊距 */
+    #game-container {
+        padding: 30px;
+    }
+
+    #action-bar {
+        flex-direction: row;
+        justify-content: center; 
+    }
+    
+    /* 【修改】 game-controls 桌機版改為橫向 */
+    #game-controls {
+        flex-direction: row;
+        justify-content: center;
+        /* 【新】 讓控制項垂直置中 */
+        align-items: center;
+    }
+    
+    /* 【新】 桌機版 control-group 不需要特殊背景 */
+    .control-group {
+        background: none;
+        padding: 0;
+        border: none;
+        box-shadow: none;
+    }
+    
+    .btn {
+        width: auto; 
+    }
+}
